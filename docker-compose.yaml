@@ -1,0 +1,37 @@
+services:
+  nginx:
+    build:
+      context: ./users-management-api/nginx
+    container_name: nginx
+    ports:
+      - "3030:80"
+    depends_on:
+      - api
+
+  storage:
+    build:
+      context: ./storage-service
+    ports:
+      - "3007:3007"
+    volumes:
+      - ./storage-service:/app
+
+  api:
+    build:
+      context: ./users-management-api
+    depends_on:
+      - storage
+    deploy:
+      replicas: 2
+    volumes:
+      - ./users-management-api:/app
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    volumes:
+      - ./client:/app
